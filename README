@@ -1,0 +1,19 @@
+Java OOM handling:
+
+- When the heap is OOM an OOMError exception is thrown which may be caught.
+- The shutdown hook is executed
+- When the OOM is thrown by a thread (CompletableFuture) it may be caught by the parent (Main3)
+- When the OOM is thrown by a thread (new Thread().start) it will terminate the process and report the offending thread (Main4)
+
+
+When specifying -XX:+ExitOnOutOfMemoryError, the process is terminated immediately
+without an exception and without calling the shutdown hook.
+
+- When the process exceeds the container memory, Linux terminates the process and
+  an exit code of 137 is returned.
+
+- No exception may be caught and shutdown hook is not executed (process is KILLED)
+
+Interesting that allocating off heap memory does not actually allocate the pages.
+Only when accessing this memory the pages are allocated and the process eventually 
+terminates.

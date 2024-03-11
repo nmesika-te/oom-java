@@ -1,0 +1,44 @@
+./gradlew build
+
+
+printf "\n\n HEAP allocation tests ============\n\n"
+
+printf "\nwithout ExitOnOutOfMemoryError ============\n"
+java  -Xmx1000000000 -cp build/libs/oom-java-1.0-SNAPSHOT.jar  org.example.Main
+echo "exit code $?"
+
+printf "\nwith ExitOnOutOfMemoryError =============\n"
+java -XX:+ExitOnOutOfMemoryError -Xmx1000000000 -cp build/libs/oom-java-1.0-SNAPSHOT.jar  org.example.Main
+echo "exit code $?"
+
+
+
+printf "\n\n HEAP allocation tests in another thread ============\n\n"
+
+printf "\nwithout ExitOnOutOfMemoryError ============\n"
+java  -Xmx1000000000 -cp build/libs/oom-java-1.0-SNAPSHOT.jar  org.example.Main2
+echo "exit code $?"
+
+printf "\nwith ExitOnOutOfMemoryError =============\n"
+java -XX:+ExitOnOutOfMemoryError -Xmx1000000000 -cp build/libs/oom-java-1.0-SNAPSHOT.jar  org.example.Main2
+echo "exit code $?"
+
+printf "\nwithout ExitOnOutOfMemoryError and no try/catch ============\n"
+java  -Xmx1000000000 -cp build/libs/oom-java-1.0-SNAPSHOT.jar  org.example.Main3
+echo "exit code $?"
+
+printf "\nwithout ExitOnOutOfMemoryError and no try/catch and no CompletableFuture ============\n"
+java  -Xmx1000000000 -cp build/libs/oom-java-1.0-SNAPSHOT.jar  org.example.Main4
+echo "exit code $?"
+
+
+printf "\n\n OFF HEAP allocation tests ============\n\n"
+
+printf "\nwithout ExitOnOutOfMemoryError ============\n"
+docker run  --memory 100000000 -v `pwd`/build/libs:/build/libs amazoncorretto:17 java  -Xmx1000000000 -cp /build/libs/oom-java-1.0-SNAPSHOT.jar  org.example.Main offheap
+echo "exit code $?"
+
+printf "\nwith ExitOnOutOfMemoryError =============\n"
+docker run  --memory 100000000 -v `pwd`/build/libs:/build/libs amazoncorretto:17 java -XX:+ExitOnOutOfMemoryError -Xmx1000000000 -cp /build/libs/oom-java-1.0-SNAPSHOT.jar  org.example.Main offheap
+echo "exit code $?"
+
